@@ -326,8 +326,8 @@ function IntegrationItem({ name, connected }) {
     switch (active) {
       case "profile":
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-10 px-6">
-      <div className="max-w-6xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-10 px-1">
+      <div className="max-w-6xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden ">
 
         {/* Banner */}
         <div className="h-36 bg-gradient-to-r from-green-600 to-blue-600 relative">
