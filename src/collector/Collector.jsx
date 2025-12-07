@@ -184,14 +184,17 @@ useEffect(() => {
                 <li
                   key={item.id}
                   onClick={() => setActive(item.id)}
-                  className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all ${
+                  className={` p-2 rounded-lg cursor-pointer transition-all ${
                     active === item.id
                       ? "bg-green-700/25 text-white font-semibold"
                       : "text-white/90 hover:bg-white/5"
                   }`}
-                >
+                >{sidebarOpen &&
+                  <div className="flex items-center gap-3 ">
                   <span className="text-lg">{item.icon}</span>
-                  {sidebarOpen && <span className="text-sm">{item.label}</span>}
+                  <span className="text-sm">{item.label}</span>
+                  </div>
+                }
                 </li>
               ))}
             </ul>
@@ -204,8 +207,6 @@ useEffect(() => {
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
               {initials}
             </div>
-           
-            
             {sidebarOpen && (
               <div>
                 <div className="text-sm font-medium">{name.split(" ")[0]}</div>
@@ -217,9 +218,12 @@ useEffect(() => {
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 text-sm text-red-200 hover:text-white transition"
-          >
-            <FaSignOutAlt className="text-red-300" />
-            {sidebarOpen && <span>Logout</span>}
+          >{sidebarOpen &&
+            <div className="flex items-center gap-2">
+              <FaSignOutAlt className="text-red-300" />
+              <span>Logout</span>
+            </div> 
+            }
           </button>
         </div>
       </motion.aside>
@@ -230,18 +234,12 @@ useEffect(() => {
         <div className={`sticky top-0 backdrop-blur-md bg-white/60 dark:bg-black/40 border-b border-white/10 dark:border-black/20  ${showModal ? "z-0" : "z-10"}`}>
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen((s) => !s)}
-                className="md:hidden p-2 rounded-md bg-white/5"
-              >
-                {sidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
-              </button>
               <h3 className="text-lg font-semibold text-white capitalize">
                 {active === "profile" ? "Dashboard" : active}
               </h3>
               <NavLink
                 to = {"/home"}
-                className="hidden md:flex items-center gap-2 text-xs text-gray-200 ml-4">
+                className="flex items-center gap-2 text-xs text-gray-200 ml-4">
                 <span>Home</span>
                 <span className="mx-2">•</span>
                 <span>{active}</span>

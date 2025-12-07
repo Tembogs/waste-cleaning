@@ -224,7 +224,6 @@ export default function Houser({ setActive, active, showModal, setShowModal }) {
               <FaSignOutAlt className="text-red-300" />
               <span>Logout</span>
             </div> 
-            
             }
           </button>
         </div>
