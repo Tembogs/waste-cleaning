@@ -125,12 +125,6 @@ useEffect(() => {
           <p className="text-lg mb-6">
             Empowering communities through responsible waste management, recycling, and education.
           </p>
-          <button
-            onClick={() => navigate("/signup")}
-            className="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md"
-          >
-            Get Started
-          </button>
         </motion.div>
       </section>
 
