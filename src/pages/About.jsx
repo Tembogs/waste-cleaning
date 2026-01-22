@@ -29,11 +29,6 @@ export default function About() {
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 transition-all duration-700">
       <Navbar />
 
-      {/* 🌐 Floating Orb Background */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <Orb hoverIntensity={0.4} rotateOnHover hue={90} />
-      </div>
-
       {/* 🪴 Header */}
       <motion.section
         initial={{ opacity: 0, y: -40 }}
