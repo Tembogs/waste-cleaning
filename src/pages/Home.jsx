@@ -1,244 +1,224 @@
-import React, { useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform, animate, AnimatePresence  } from "framer-motion"
+import { Link } from "react-router-dom";
 import {
-  FaRecycle,
-  FaMapMarkerAlt,
-  FaHandsHelping,
-  FaLeaf,
-  FaUserPlus,
-  FaBell,
-} from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+  CalendarDays,
+  MapPin,
+  Truck,
+  Gift,
+  Trash2,
+  Recycle,
+  CircleAlert,
+  Award,
+} from "lucide-react";
 import Navbar from "../component/Nav";
 import Footer from "../component/Footer";
 
-export default function Home() {
-  const navigate = useNavigate();
-  const [notification, setNotification] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    // Show a random notification every 8 seconds
-    const notifications = [
-      "🌿 New cleanup event in Lagos Mainland!",
-      "♻ 5 households scheduled pickups today!",
-      "🚛 Recycling truck en route to Lekki Center.",
-      "🌍 You helped divert 20kg of plastic this week!",
-    ];
-    const interval = setInterval(() => {
-      setNotification(notifications[Math.floor(Math.random() * notifications.length)]);
-      setTimeout(() => setNotification(null), 4000);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, []);
-  
- function Counter({ target, duration = 2 }) {
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.floor(latest).toLocaleString() + "+");
-
-  useEffect(() => {
-    const end = parseInt(target.replace(/[^\d]/g, ""), 10);
-    const controls = animate(count, end, { duration, ease: "easeOut" });
-    return controls.stop;
-  }, [target, duration, count]);
-
-  return <motion.span>{rounded}</motion.span>;
-}
-
-
-  const stats = [
-    { num: "5200+", label: "Pickups Completed" },
-    { num: "1300+", label: "Active Users" },
-    { num: "87", label: "Recycling Centers" },
-  ]
-
-const testimonials = [
+const processSteps = [
   {
-    name: "Aisha B.",
-    location: "Lagos, Nigeria",
-    text: "CleanCore made it easy for my family to schedule waste pickups. Our street is cleaner than ever!",
+    number: "01",
+    title: "Request",
+    icon: CalendarDays,
   },
   {
-    name: "Emeka O.",
-    location: "Abuja, Nigeria",
-    text: "I earn points every month for recycling. Great initiative — it motivates me to stay consistent.",
+    number: "02",
+    title: "Collector Assigned",
+    icon: MapPin,
   },
   {
-    name: "Ngozi E.",
-    location: "Port Harcourt, Nigeria",
-    text: "Our neighborhood cleanup was supported by CleanCore — amazing community support!",
+    number: "03",
+    title: "Collection",
+    icon: Truck,
   },
   {
-    name: "Tunde K.",
-    location: "Ibadan, Nigeria",
-    text: "Easy to use, visually clean, and I love seeing how my recycling efforts contribute to the community.",
+    number: "04",
+    title: "Earn Rewards",
+    icon: Gift,
   },
 ];
 
-// Auto slide every 6 seconds
-useEffect(() => {
-  const timer = setInterval(() => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
-  }, 6000);
-  return () => clearInterval(timer);
-}, [testimonials.length]);
+const services = [
+  {
+    title: "Waste Collection",
+    description:
+      "Simple requests, accountable updates and local impact you can see.",
+    icon: Trash2,
+    className: "bg-white",
+  },
+  {
+    title: "Recycling",
+    description:
+      "Simple requests, accountable updates and local impact you can see.",
+    icon: Recycle,
+    className: "bg-[#dceedd]",
+  },
+  {
+    title: "Illegal Dump Reporting",
+    description:
+      "Simple requests, accountable updates and local impact you can see.",
+    icon: CircleAlert,
+    className: "bg-white",
+  },
+  {
+    title: "Rewards",
+    description:
+      "Simple requests, accountable updates and local impact you can see.",
+    icon: Award,
+    className: "bg-[#fff2d2]",
+  },
+];
 
+const impactStats = [
+  { value: "128t", label: "Waste collected" },
+  { value: "74t", label: "Recycling collected" },
+  { value: "842", label: "Illegal dumps resolved" },
+  { value: "4.2m", label: "Points distributed" },
+  { value: "18,460", label: "Active users" },
+];
 
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white text-gray-800 relative">
+    <div className="min-h-screen bg-white text-[#182820]">
       <Navbar />
 
-      {/* 🔔 Floating notification animation */}
-      <AnimatePresence>
-        {notification && (
-          <motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4 }}
-            className="fixed top-20 right-6 bg-green-700 text-white px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 z-50"
-          >
-            <FaBell />
-            <span>{notification}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 🌱 Hero Section */}
-      <section
-        className="relative h-[70vh] flex items-center justify-center text-center bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1672575659188-e7dd57652db3?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z3JlZW5lciUyMHBhc3R1cmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="relative z-10 text-white max-w-3xl px-4"
-        >
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-            Together for a Cleaner Nigeria 🌍
+      {/* Hero */}
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-14 md:grid-cols-2 md:px-12 md:py-16">
+        <div>
+          <h1 className="max-w-xl text-4xl font-normal leading-[1.12] tracking-tight text-[#182820] sm:text-5xl lg:text-6xl">
+            Building Cleaner Communities, One Cycle at a Time.
           </h1>
-          <p className="text-lg mb-6">
-            Empowering communities through responsible waste management, recycling, and education.
+
+          <p className="mt-6 max-w-xl text-base leading-7 text-[#6b7b72]">
+            Request responsible collection, recycle more, report illegal
+            dumping and earn meaningful rewards—all with transparent progress.
           </p>
-        </motion.div>
+
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link
+              to="/signup"
+              className="rounded-lg bg-[#104b36] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#0b3929]"
+            >
+              Get Started
+            </Link>
+
+            <a
+              href="#how-it-works"
+              className="rounded-lg border border-[#dbe4dd] px-5 py-3 text-sm font-medium text-[#244238] transition hover:bg-[#f3f7f3]"
+            >
+              Learn More
+            </a>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-[28px]">
+          <img
+            src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=85"
+            alt="People sorting recyclable materials in a clean community"
+            className="h-[320px] w-full object-cover sm:h-[390px]"
+          />
+        </div>
       </section>
 
-      {/* 💚 Mission Section */}
-      <section className="py-16 bg-white">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">
-          Our Purpose
-        </h2>
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 px-6">
-          {[
-            {
-              icon: <FaRecycle className="text-green-600 text-3xl" />,
-              title: "Reduce Waste",
-              desc: "We encourage smart disposal and recycling of plastics, glass, and e-waste to keep our environment clean.",
-              img: "https://images.unsplash.com/photo-1574974671999-24b7dfbb0d53?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d2FzdGUlMjBtYW5hZ2VtZW50fGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=600",
-            },
-            {
-              icon: <FaHandsHelping className="text-green-600 text-3xl" />,
-              title: "Empower Communities",
-              desc: "We collaborate with households and collectors to create a sustainable waste management system.",
-              img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
-            },
-            {
-              icon: <FaLeaf className="text-green-600 text-3xl" />,
-              title: "Protect Nature",
-              desc: "By reducing landfill pressure, we protect ecosystems and promote a greener, cleaner Nigeria.",
-              img: "https://images.unsplash.com/photo-1686742553079-64fd424ce081?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHByb3RlY3QlMjBuYXR1cmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600",
-            },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition"
-            >
-              <img src={item.img} alt={item.title} className="h-40 w-full object-cover" />
-              <div className="p-5">
-                <div className="mb-3">{item.icon}</div>
-                <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.desc}</p>
+      {/* How it works */}
+      <section id="how-it-works" className="bg-[#f0f5ee] px-6 py-12 md:px-12">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-3xl font-normal tracking-tight text-[#182820]">
+            How EcoCycle works
+          </h2>
+
+          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {processSteps.map((step) => {
+              const Icon = step.icon;
+
+              return (
+                <div
+                  key={step.number}
+                  className="rounded-2xl bg-white p-5 sm:min-h-[102px]"
+                >
+                  <p className="text-xs font-semibold text-[#2b8059]">
+                    {step.number}
+                  </p>
+
+                  <Icon
+                    size={22}
+                    strokeWidth={1.5}
+                    className="mt-3 text-[#4d8c6b]"
+                  />
+
+                  <h3 className="mt-3 text-sm font-semibold text-[#182820]">
+                    {step.title}
+                  </h3>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section className="px-6 py-12 md:px-12">
+        <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((service) => {
+            const Icon = service.icon;
+
+            return (
+              <div
+                key={service.title}
+                className={`min-h-[165px] rounded-3xl border border-[#dfe8e1] p-6 ${service.className}`}
+              >
+                <Icon
+                  size={23}
+                  strokeWidth={1.5}
+                  className="text-[#4c9870]"
+                />
+
+                <h3 className="mt-7 text-base font-semibold text-[#182820]">
+                  {service.title}
+                </h3>
+
+                <p className="mt-7 text-xs leading-5 text-[#718078]">
+                  {service.description}
+                </p>
               </div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      {/* 📊 Statistics */}
-      <section className="py-14 bg-green-50">
-        <h2 className="text-2xl font-bold text-center text-green-800 mb-8">
-          Impact in Numbers
+      {/* Community impact */}
+      <section className="bg-[#104b36] px-6 py-12 text-white md:px-12">
+        <div className="mx-auto max-w-7xl text-center">
+          <h2 className="text-3xl font-normal">Community impact</h2>
+
+          <div className="mt-9 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+            {impactStats.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-2xl font-normal text-[#a9d5b9]">
+                  {stat.value}
+                </p>
+
+                <p className="mt-2 text-xs text-[#d2e5d9]">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final call to action */}
+      <section className="px-6 py-14 text-center">
+        <h2 className="text-3xl font-normal tracking-tight text-[#182820]">
+          Ready to join the cycle?
         </h2>
-        <div className="flex justify-center gap-10 flex-wrap text-center">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.15 }}
-              viewport={{ once: true }}
-              className="bg-white px-6 py-6 rounded-xl shadow-lg w-40"
-            >
-              <h3 className="text-3xl font-bold text-green-700">
-                <Counter target={stat.num} />
-              </h3>
-              <p className="text-sm text-gray-600 mt-1">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
-
-      {/* 🧍 Testimonials */}
-<section className="py-16 bg-white overflow-hidden">
-  <h2 className="text-2xl font-bold text-center text-green-800 mb-8">
-    What People Say
-  </h2>
-
-  <div className="relative max-w-3xl mx-auto px-6">
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={activeIndex}
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -100 }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
-        className="bg-green-50 rounded-xl p-8 shadow-lg text-center"
-      >
-        <p className="text-gray-700 italic mb-5 text-lg leading-relaxed">
-          “{testimonials[activeIndex].text}”
+        <p className="mt-3 text-sm text-[#718078]">
+          Cleaner streets begin with one accountable action.
         </p>
-        <h4 className="font-semibold text-green-700 text-base">
-          — {testimonials[activeIndex].name}
-        </h4>
-        <p className="text-sm text-gray-500">{testimonials[activeIndex].location}</p>
-      </motion.div>
-    </AnimatePresence>
 
-    {/* Navigation dots */}
-    <div className="flex justify-center gap-2 mt-6">
-      {testimonials.map((_, i) => (
-        <button
-          key={i}
-          onClick={() => setActiveIndex(i)}
-          className={`w-3 h-3 rounded-full ${
-            i === activeIndex ? "bg-green-600" : "bg-gray-300"
-          } transition`}
-        />
-      ))}
-    </div>
-  </div>
-</section>
-
+        <Link
+          to="/signup"
+          className="mt-5 inline-block rounded-lg bg-[#104b36] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#0b3929]"
+        >
+          Join EcoCycle
+        </Link>
+      </section>
 
       <Footer />
     </div>

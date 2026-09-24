@@ -1,315 +1,221 @@
-import { useState, useEffect, useContext, useMemo, useRef } from "react";
-import { motion} from "framer-motion";
-import {
-  FaRecycle,
-  FaTrashAlt,
-  FaMapMarkedAlt,
-  FaStar,
-  FaCog,
-  FaSignOutAlt,
-  FaLeaf,
-  FaChevronLeft,
-  FaChevronRight,
-  FaPlus,
-  FaUserCircle,
-  FaBell,
-  
-} from "react-icons/fa";
-import { AuthContext } from "../context/AuthContext";
-import { toast } from "react-toastify";
-import { useNavigate, useLocation, NavLink } from "react-router-dom";
-import axios from "axios";
-import Dashboard from "./Dashboard";
+// src/collector/components/CollectorMobileNav.jsx
+import React from 'react';
+import { Truck, CheckCircle2, Clock, User, Bell, Navigation, AlertTriangle, X, Check, ArrowRight } from 'lucide-react';
 
-
-export default function Collector({ setActive, active, showModal, setShowModal }) {
-  const { user, logout ,uploadAvatar ,token, updateUser} = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [requests, setRequests] = useState([]);
-  const [showNotifCount, setShowNotifCount] = useState(true); // small UX toggle
-  const navigate = useNavigate();
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-
-  const name = user?.name || "Guest User";
-  const initials = name.charAt(0).toUpperCase();
-
-
-  // --- Theme: follow system (auto)
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => {
-      if (mq.matches) document.documentElement.classList.add("dark");
-      else document.documentElement.classList.remove("dark");
-    };
-    apply();
-    mq.addEventListener?.("change", apply);
-    return () => mq.removeEventListener?.("change", apply);
-  }, []);
-
-  // --- persist sidebar state
-  useEffect(() => {
-    const stored = localStorage.getItem("sidebarOpen");
-    if (stored !== null) setSidebarOpen(stored === "true");
-  }, []);
-  useEffect(() => localStorage.setItem("sidebarOpen", sidebarOpen), [sidebarOpen]);
-
-  // --- fetch requests
-  const fetchRequests = async () => {
-  setLoading(true);
-  try {
-    if (!user?.collectorAssayId) {
-      throw new Error("Missing collectorAssayId");
-    }
-
-    let endpoint;
-    if (active === "waste") {
-      endpoint = `https://waste-management-3-iw0g.onrender.com/api/waste/${user?.collectorAssayId}`;
-    } else if (active === "recycle") {
-      endpoint = `https://waste-management-3-iw0g.onrender.com/api/recycle/${user?.collectorAssayId}`;
-    } else {
-      endpoint = `https://waste-management-3-iw0g.onrender.com/api/dump/${user?.collectorAssayId}`;
-    }
-
-    const res = await axios.get(endpoint, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    setRequests(Array.isArray(res.data.data) ? res.data.data : []);
-  } catch (err) {
-    console.error("Error fetching requests:", err);
-    toast.error("Failed to fetch requests");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
-useEffect(() => {
-  if (token && (active === "waste" || active === "recycle" || active === "illegal") && user?.collectorAssayId ) {
-    fetchRequests(); // initial fetch
-  }
-}, [token, active,user?.collectorAssayId ]);
-
-  // Accept ?waste=true to open waste view
-  useEffect(() => {
-    if (typeof setActive !== 'function') return;
-    if (params.get("waste")) 
-      {
-      setActive("waste")
-    } else if (params.get('recycle')) {
-      setActive("recycle")
-    } else if (params.get('illegal'))
-    {setActive("illegal")}
-  }, [location.search, setActive]);
-
-  // --- logout
-  const handleLogout = () => {
-    logout();
-    toast.success("Logged out successfully 👋");
-    navigate("/home");
-  };
-
-
-  // sections
-  const sections = [
-    { id: "profile", label: "Profile", icon: <FaUserCircle className="text-cyan-400" /> },
-    { id: "waste", label: "Waste Requests", icon: <FaTrashAlt className="text-yellow-400" /> },
-    { id: "recycle", label: "Recycling Requests", icon: <FaRecycle className="text-lime-400" /> },
-    { id: "illegal", label: "Illegal-Dumps Requests", icon: <FaMapMarkedAlt className="text-red-400" /> },
-    { id: "points", label: "Points", icon: <FaStar className="text-orange-400" /> },
-    { id: "settings", label: "Settings", icon: <FaCog className="text-gray-400" /> },
+export default function CollectorMobileNav({
+  activeTab,
+  setActiveTab,
+  selectedReq,
+  setSelectedReq,
+  actionType,
+  setActionType,
+  rejectionReason,
+  setRejectionReason,
+  collectionNote,
+  setCollectionNote,
+  collectedMaterials,
+  setCollectedMaterials,
+  handleStatusAction,
+  isSubmitting,
+  activeCategory
+}) {
+  const navItems = [
+    { id: 'assigned', label: 'Active Tasks', icon: Clock },
+    { id: 'completed', label: 'Completed', icon: CheckCircle2 },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
-   
- 
-  // --- summary derived from requests
-  const summary = useMemo(() => {
-  const total = requests.length;
-  const pending = requests.filter((r) => r.status === "Pending").length;
-  const completed = requests.filter((r) =>
-    ["Completed", "Resolved"].includes(r.status)
-  ).length;
-  return { total, pending, completed };
-}, [requests]);
-
-
-  // --- render content
-  
-
   return (
-     <div className="flex min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 overflow-hidden">
-      {/* ===== SIDEBAR (STATIC) ===== */}
-      <motion.aside
-        animate={{ width: sidebarOpen ? 260 : 84 }}
-        transition={{ duration: 0.28 }}
-        className={`bg-white/10 dark:bg-black/40 text-white p-4 flex fixed left-0 top-0 h-screen flex-col justify-between shadow-lg backdrop-blur-md border-r border-green-700/20 ${showModal ? "z-0" : "z-20"}`}
-      >
-        <div>
-          {/* Logo + Toggle */}
-          <div className="flex items-center justify-between mb-6 relative">
-            <div className="flex items-center gap-3">
-              <div className="bg-white/10 p-2 rounded-md shadow-sm">
-                <FaLeaf className="text-lime-300" />
-              </div>
-              {sidebarOpen && (
-                <h1 className="font-extrabold text-lg tracking-wide">CleanCore</h1>
-              )}
-            </div>
-
-            <button
-              onClick={() => setSidebarOpen((s) => !s)}
-              className="p-2 bg-green-600 hover:bg-green-500 rounded-full -right-3 top-2 shadow z-10 text-white"
-              aria-label="Toggle sidebar"
-            >
-              {sidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
-            </button>
+    <>
+      {/* Top Mobile Bar */}
+      <header className="sm:hidden sticky top-0 z-40 bg-forest-900 text-white px-4 py-3 flex items-center justify-between shadow-md">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-emerald-500/20 rounded-lg">
+            <Truck className="h-5 w-5 text-emerald-400" />
           </div>
-
-          {/* User Info */}
-          {sidebarOpen && (
-            <div className="mb-4">
-              <div className="text-xs text-gray-300">Welcome</div>
-              <div className="font-semibold">{name.split(" ")[0]}</div>
-              <div className="text-xs text-gray-400">{user?.role || "Houser"}</div>
-            </div>
-          )}
-
-          {/* Navigation */}
-          <nav>
-            <ul className="space-y-2">
-              {sections.map((item) => (
-                <li
-                  key={item.id}
-                  onClick={() => setActive(item.id)}
-                  className={` p-2 rounded-lg cursor-pointer transition-all ${
-                    active === item.id
-                      ? "bg-green-700/25 text-white font-semibold"
-                      : "text-white/90 hover:bg-white/5"
-                  }`}
-                >{sidebarOpen &&
-                  <div className="flex items-center gap-3 ">
-                  <span className="text-lg">{item.icon}</span>
-                  <span className="text-sm">{item.label}</span>
-                  </div>
-                }
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div>
+            <span className="font-bold text-sm tracking-tight block">Collector Portal</span>
+            <span className="text-[10px] text-emerald-300 block capitalize">{activeCategory} Operations</span>
+          </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-6">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
-              {initials}
-            </div>
-            {sidebarOpen && (
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="text-xs font-semibold text-emerald-200">Online</span>
+        </div>
+      </header>
+
+      {/* Bottom Navigation Bar */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-3 py-2 shadow-lg">
+        <div className="grid grid-cols-3 gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex flex-col items-center justify-center py-1.5 rounded-xl transition cursor-pointer ${
+                  isActive
+                    ? 'text-forest-900 font-bold bg-emerald-50'
+                    : 'text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <Icon className={`h-5 w-5 ${isActive ? 'text-forest-900' : 'text-gray-400'}`} />
+                <span className="text-[11px] mt-1">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile Slide-up Bottom Sheet Modal */}
+      {selectedReq && actionType && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-6 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+            {/* Sheet Handle */}
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto sm:hidden mb-2"></div>
+
+            <div className="flex justify-between items-center pb-2 border-b border-gray-100">
               <div>
-                <div className="text-sm font-medium">{name.split(" ")[0]}</div>
-                <div className="text-xs text-white/70">{user?.role || "Houser"}</div>
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
+                  {activeCategory} Field Action
+                </span>
+                <h3 className="text-base font-bold text-gray-900 capitalize">
+                  {actionType === 'accept' && 'Accept Request Assignment'}
+                  {actionType === 'reject' && 'Reject Request'}
+                  {actionType === 'route' && 'Start En-Route Navigation'}
+                  {actionType === 'collect' && 'Verify Collection Details'}
+                </h3>
+              </div>
+              <button
+                onClick={() => { setSelectedReq(null); setActionType(null); }}
+                className="p-1.5 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Accept Request Sheet */}
+            {actionType === 'accept' && (
+              <div className="space-y-3">
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-xs text-emerald-900">
+                  <p className="font-semibold mb-1">Confirming Assignment</p>
+                  <p>By accepting, this pickup will be locked to your route queue and the user will be notified.</p>
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p><strong>Location:</strong> {selectedReq.location}</p>
+                  {selectedReq.address && <p><strong>Address:</strong> {selectedReq.address}</p>}
+                </div>
               </div>
             )}
-          </div>
 
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-red-200 hover:text-white transition"
-          >{sidebarOpen &&
-            <div className="flex items-center gap-2">
-              <FaSignOutAlt className="text-red-300" />
-              <span>Logout</span>
-            </div> 
-            }
-          </button>
-        </div>
-      </motion.aside>
-
-      {/* ===== MAIN CONTENT ===== */}
-      <main className="flex-1 ml-[84px] md:ml-[260px] relative overflow-y-auto h-screen">
-        {/* Top Header */}
-        <div className={`sticky top-0 backdrop-blur-md bg-white/60 dark:bg-black/40 border-b border-white/10 dark:border-black/20  ${showModal ? "z-0" : "z-10"}`}>
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-white capitalize">
-                {active === "profile" ? "Dashboard" : active}
-              </h3>
-              <NavLink
-                to = {"/home"}
-                className="flex items-center gap-2 text-xs text-gray-200 ml-4">
-                <span>Home</span>
-                <span className="mx-2">•</span>
-                <span>{active}</span>
-              </NavLink>
-            </div>
-
-            <div className="flex items-center gap-3 text-gray-200">
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setActive("waste");
-                    if (!sidebarOpen) setSidebarOpen(true);
-                    fetchRequests();
-                  }}
-                  title="View requests"
-                  className="p-2 rounded-md bg-white/10 hover:bg-white/20"
-                >
-                  {active === "waste" ? (
-                    <FaTrashAlt />
-                  ) : active === "recycle" ? (
-                    <FaRecycle />
-                  ) : (
-                    <FaMapMarkedAlt />
-                  )}
-                </button>
-                {showNotifCount && summary.total > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                    {summary.total > 99 ? "99+" : summary.total}
-                  </span>
-                )}
+            {/* Reject Request Form Sheet */}
+            {actionType === 'reject' && (
+              <div className="space-y-3">
+                <div className="p-3 bg-red-50 rounded-xl border border-red-100 text-xs text-red-900 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-red-600" />
+                  <p>A valid reason is required to reject this pickup request.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Rejection Reason *
+                  </label>
+                  <textarea
+                    rows="3"
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="e.g. Hazardous location, bin inaccessible, or outside boundary..."
+                    required
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
               </div>
+            )}
 
+            {/* En Route Navigation Sheet */}
+            {actionType === 'route' && (
+              <div className="space-y-3">
+                <div className="p-3 bg-purple-50 rounded-xl border border-purple-100 text-xs text-purple-900 flex items-center gap-2">
+                  <Navigation className="h-4 w-4 text-purple-600 shrink-0" />
+                  <span>Update status to <strong>En Route</strong> and notify household.</span>
+                </div>
+                <div className="text-xs text-gray-600">
+                  <p><strong>Destination:</strong> {selectedReq.address || selectedReq.location}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Verified Completion Sheet */}
+            {actionType === 'collect' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-2">
+                    Verify & Adjust Collected Quantities
+                  </label>
+                  {collectedMaterials.map((m, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl mb-2 text-xs">
+                      <span className="font-semibold text-gray-800">{m.wasteType}</span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={m.collectedQuantity}
+                          onChange={(e) => {
+                            const updated = [...collectedMaterials];
+                            updated[idx].collectedQuantity = Number(e.target.value);
+                            setCollectedMaterials(updated);
+                          }}
+                          className="w-20 px-2 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-bold text-right focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="text-gray-500 font-medium">kg</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Collector Notes (Optional)
+                  </label>
+                  <textarea
+                    rows="2"
+                    value={collectionNote}
+                    onChange={(e) => setCollectionNote(e.target.value)}
+                    placeholder="Enter any field observations..."
+                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex items-center gap-2">
               <button
-                onClick={() => setShowNotifCount((s) => !s)}
-                title="Toggle notifications"
-                className="p-2 rounded-md bg-white/10 hover:bg-white/20"
+                onClick={handleStatusAction}
+                disabled={isSubmitting}
+                className={`flex-1 py-3 px-4 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer ${
+                  actionType === 'reject' 
+                    ? 'bg-red-600 hover:bg-red-700' 
+                    : actionType === 'route'
+                    ? 'bg-purple-600 hover:bg-purple-700'
+                    : 'bg-forest-900 hover:bg-forest-800'
+                }`}
               >
-                <FaBell />
+                {isSubmitting ? (
+                  'Updating Status...'
+                ) : (
+                  <>
+                    <span>Confirm {actionType.toUpperCase()}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </button>
-
-              <div className="hidden sm:flex items-center gap-3">
-                <div className="text-sm text-gray-300">
-                  {user?.email?.split?.("@")?.[0] || name}
-                </div>
-                <div className="w-9 h-9 rounded-full bg-green-600 text-white flex items-center justify-center">
-                  {initials}
-                </div>
-              </div>
             </div>
           </div>
         </div>
-
-        {/* Scrollable Dashboard Content */}
-        <div className="p-6 overflow-y-auto"><Dashboard 
-        active={active}
-        showModal={showModal}
-        setShowModal={setShowModal}/></div>
-
-        {/* Floating Create Button */}
-        {!["profile", "points", "settings"].includes(active) && (
-          <motion.button
-          whileHover={{ scale: 1.06 }}
-          onClick={() => setShowModal(true)}
-          className="fixed bottom-6 right-6 bg-gradient-to-br from-green-600 to-emerald-500 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-2xl z-40"
-          title="Create request"
-        >
-          <FaPlus />
-        </motion.button>
-        )}
-      </main>
-    </div>
+      )}
+    </>
   );
 }
