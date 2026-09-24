@@ -110,7 +110,7 @@ export default function Home() {
 
         <div className="overflow-hidden rounded-[28px]">
           <img
-            src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=85"
+            src="truck.jpg"
             alt="People sorting recyclable materials in a clean community"
             className="h-[320px] w-full object-cover sm:h-[390px]"
           />
