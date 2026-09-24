@@ -1,16 +1,101 @@
-# React + Vite
+# 🚛 Waste Cleaning Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive frontend application for a smart waste management platform that connects residents with waste collection services.
 
-Currently, two official plugins are available:
+The platform provides an intuitive interface for scheduling waste pickups, reporting illegal dumping, managing recycling activities, and supporting waste collectors through dedicated dashboards.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+waste-cleaning-2.vercel.app
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Features
+
+- Secure User Authentication
+- Resident Dashboard
+- Collector Dashboard
+- Waste Collection Requests
+- Recycling Management
+- Illegal Dump Reporting
+- Responsive Design
+- Modern User Interface
+
+---
+
+## 🛠 Tech Stack
+
+- React
+- Vite
+- React Router
+- Context API
+- Axios
+- Tailwind CSS
+
+---
+
+## 📂 Project Structure
+
+```text
+src/
+├── collector/
+├── houser/
+├── components/
+├── context/
+├── pages/
+├── animations/
+└── main.jsx
+```
+
+---
+
+## 🚀 Installation
+
+```bash
+git clone <repository-url>
+
+npm install
+
+npm run dev
+```
+
+---
+
+## 📸 Suggested Screenshots
+
+- Landing Page
+- Login
+- Resident Dashboard
+- Collector Dashboard
+- Waste Collection Request
+- Recycling Page
+
+---
+
+## 🌟 Why I Built This
+
+This project demonstrates how technology can improve environmental sustainability by simplifying waste collection processes and promoting responsible waste disposal through an easy-to-use digital platform.
+
+---
+
+## 🔮 Future Improvements
+
+- Live tracking of collection vehicles
+- Push notifications
+- Online payments
+- AI-assisted waste classification
+- Mobile application
+- Real-time collector updates
+
+---
+
+## 👨‍💻 Author
+
+**Temmy (Tembogs)**
+
+Full-Stack Software Engineer
+
+GitHub: https://github.com/Tembogs
+---
