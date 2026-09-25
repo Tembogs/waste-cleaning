@@ -3,6 +3,7 @@ import React, { useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { AlertTriangle, Plus, Trash, Send, Loader2, ImagePlus, X } from 'lucide-react';
+import { compressImage } from '../../utilis/compressImage';
 
 const DUMP_CATEGORIES = [
   "General",
@@ -48,7 +49,7 @@ export default function ReportDumpForm({ onSuccess }) {
     setMaterials(materials.filter((_, i) => i !== index));
   };
 
-  const handleImageFile = (e) => {
+  const handleImageFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -57,6 +58,13 @@ export default function ReportDumpForm({ onSuccess }) {
     reader.onloadend = () => {
       setImageBase64(reader.result);
     };
+    try {
+          // Compress image to max width 800px and 70% JPEG quality (~50-150KB)
+          const compressedBase64 = await compressImage(file, 800, 0.7);
+          setImageBase64(compressedBase64);
+        } catch (err) {
+          console.error('Failed to process image:', err);
+        }
   };
 
   const handleSubmit = async (e) => {
