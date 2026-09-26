@@ -48,24 +48,48 @@ export default function RequestWasteForm({ onSuccess }) {
     setMaterials(materials.filter((_, i) => i !== index));
   };
 
-  const handleImageFile = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // const handleImageFile = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
 
-    const reader = new FileReader();
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onloadend = () => {
+  //     setImageBase64(reader.result);
+  //   };
+
+  //   try {
+  //     // Compress image to max width 800px and 70% JPEG quality (~50-150KB)
+  //     const compressedBase64 = await compressImage(file, 800, 0.7);
+  //     setImageBase64(compressedBase64);
+  //   } catch (err) {
+  //     console.error('Failed to process image:', err);
+  //   }
+  // };
+
+  const handleImageFile = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       setImageBase64(reader.result);
     };
 
-    try {
-      // Compress image to max width 800px and 70% JPEG quality (~50-150KB)
-      const compressedBase64 = await compressImage(file, 800, 0.7);
-      setImageBase64(compressedBase64);
-    } catch (err) {
-      console.error('Failed to process image:', err);
-    }
-  };
+  try {
+    setIsCompressing(true); // Optional loading indicator
+    
+    // Resize mobile camera image to max width 1024px and 70% quality (~150KB)
+    const compressedBase64 = await compressImage(file, 1024, 0.7);
+    
+    setImageBase64(compressedBase64);
+  } catch (error) {
+    console.error('Image compression failed:', error);
+    alert('Failed to process mobile image. Please try another photo.');
+  } finally {
+    setIsCompressing(false);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

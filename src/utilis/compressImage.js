@@ -1,16 +1,22 @@
 // src/utils/compressImage.js
-export const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+export const compressImage = (file, maxWidth = 1024, quality = 0.7) => {
   return new Promise((resolve, reject) => {
+    // Check if file exists
+    if (!file) return resolve(null);
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
+
     reader.onload = (event) => {
       const img = new Image();
       img.src = event.target.result;
+
       img.onload = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
 
+        // Maintain aspect ratio while resizing
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
@@ -22,12 +28,14 @@ export const compressImage = (file, maxWidth = 800, quality = 0.7) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Export as compressed JPEG base64 string
+        // Convert canvas to compressed JPEG base64 string
         const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
         resolve(compressedBase64);
       };
-      img.onerror = (err) => reject(err);
+
+      img.onerror = (error) => reject(error);
     };
-    reader.onerror = (err) => reject(err);
+
+    reader.onerror = (error) => reject(error);
   });
 };
